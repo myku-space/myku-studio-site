@@ -7,6 +7,13 @@
   "assets": {
     "directory": "./public"
   },
+  // Serve the landing page on the apex domain. Requires the myku.studio zone to
+  // be active in this Cloudflare account. https://developers.cloudflare.com/workers/configuration/routing/custom-domains/
+  "routes": [
+    { "pattern": "myku.studio", "custom_domain": true }
+  ],
+  // Keep the *.workers.dev URL live as a fallback alongside the custom domain.
+  "workers_dev": true,
   "observability": {
     "enabled": true
   }
