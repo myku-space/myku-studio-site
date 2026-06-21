@@ -1,0 +1,15 @@
+{
+  "name": "myku-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Landing page for myku.studio — a single-screen threshold to myku.space.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "preview": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "wrangler": "^4.103.0"
+  }
+}

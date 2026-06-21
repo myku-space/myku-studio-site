@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>myku</title>
+<meta name="description" content="myku — a workshop in waiting. A place to reflect, distil, and make sense of the noise.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+<style>
+  /* ── Design tokens ─────────────────────────────────────────────── */
+  :root {
+    --bg:            oklch(0.987 0.0015 100);  /* flat warm field, no texture */
+    --paper:         oklch(0.966 0.008 80);    /* warm paper sheet            */
+    --ink-strong:    oklch(0.3 0.012 65);      /* wordmark                    */
+    --ink-haiku:     oklch(0.46 0.01 65);      /* haiku                       */
+    --cinnabar:      oklch(0.5 0.165 33);      /* artist's-seal accent dots   */
+    --cinnabar-line: oklch(0.55 0.16 33);      /* hover underline             */
+    --link-rest:     oklch(0.62 0.009 65);
+    --link-sheet:    oklch(0.4 0.012 62);      /* all links, sheet hover      */
+    --link-point:    oklch(0.27 0.02 55);      /* the link pointed at         */
+    --sep:           oklch(0.79 0.006 70);     /* footer "|"                  */
+    --ink-blot:      oklch(0.3 0.035 258);     /* blue-black stain            */
+
+    /* layout (desktop anchor) */
+    --sheet-w: 642px;
+    --sheet-h: 766px;
+    --wordmark: 56px;
+    --haiku: 27px;
+    --haiku-lh: 1;
+    --haiku-gap: 15px;
+    --gap-wordmark-haiku: 50px;
+    --footer-pad: 54px;
+    --footer-gap: 15px;
+    --link-size: 10.5px;
+    --link-track: 0.28em;
+    --link-pad: 7px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    /* the whole experience fits one viewport — no scroll */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  @keyframes mkrise { from { transform: translateY(8px); } to { transform: none; } }
+
+  /* ── The paper sheet ───────────────────────────────────────────── */
+  .mkpaper {
+    position: relative;
+    width: min(var(--sheet-w), calc(100vw - 76px));
+    height: min(var(--sheet-h), calc(100vh - 96px));
+    background: var(--paper);
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    box-shadow: 0 1px 2px rgba(45,40,33,0.05), 0 14px 34px rgba(45,40,33,0.075);
+    transition: box-shadow 0.6s ease, transform 0.6s ease;
+  }
+  .mkpaper:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 6px rgba(45,40,33,0.06), 0 24px 54px rgba(45,40,33,0.12);
+  }
+
+  /* paper grain — procedural fractal noise, multiply at 0.2 */
+  .mkgrain {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='mkn'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23mkn)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    opacity: 0.2;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  /* ink blot blemish — lower-left stain + satellite splatter */
+  .mkblot {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+  .mkblot-main {
+    position: absolute;
+    bottom: 20%; left: 13%;
+    width: 42px; height: 37px;
+    background: var(--ink-blot);
+    opacity: 0.52;
+    border-radius: 47% 53% 67% 33% / 60% 45% 55% 40%;
+  }
+  .mkblot-splat {
+    position: absolute;
+    bottom: 17%; left: 20.5%;
+    width: 8px; height: 7px;
+    background: var(--ink-blot);
+    opacity: 0.42;
+    border-radius: 50%;
+  }
+
+  /* ── Content column ────────────────────────────────────────────── */
+  .mkcontent {
+    position: relative;
+    text-align: center;
+    animation: mkrise 1.7s ease both;
+  }
+  .mkwordmark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.28em;
+    font-size: var(--wordmark);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--ink-strong);
+    line-height: 1;
+  }
+  .mkwordmark .dot { color: var(--cinnabar); font-weight: 400; }
+
+  .mkhaiku {
+    margin-top: var(--gap-wordmark-haiku);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;  /* lines left-aligned to each other... */
+    text-align: left;
+    gap: var(--haiku-gap);
+  }
+  .mkhaiku > div {            /* ...block centered as a group */
+    font-size: var(--haiku);
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.012em;
+    color: var(--ink-haiku);
+    line-height: var(--haiku-lh);
+  }
+
+  /* ── Footer link line — pinned to the bottom of the sheet ──────── */
+  .mkfooter {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding-bottom: var(--footer-pad);
+    display: flex;
+    justify-content: center;
+    animation: mkrise 1.7s 0.25s ease both;
+  }
+  .mkfooter-row {
+    display: flex;
+    align-items: center;
+    gap: var(--footer-gap);
+  }
+  .mklink {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: var(--link-size);
+    font-weight: 400;
+    letter-spacing: var(--link-track);
+    text-transform: uppercase;
+    text-decoration: none;
+    padding-bottom: var(--link-pad);
+    color: var(--link-rest);
+    box-shadow: 0 1px 0 transparent;
+    transition: color 0.4s ease, box-shadow 0.4s ease;
+  }
+  .mklink .dot { color: var(--cinnabar); }  /* stays cinnabar even on hover */
+
+  /* parent-hover-child: the whole sheet is the hover target */
+  .mkpaper:hover .mklink { color: var(--link-sheet); }
+  .mkpaper .mklink:hover {
+    color: var(--link-point);
+    box-shadow: 0 1px 0 var(--cinnabar-line);
+  }
+
+  /* App Store gate — off until the app is live.
+     To reveal: add class "appstore-live" to <body> and set the real href. */
+  .mkappstore { display: none; align-items: center; gap: var(--footer-gap); }
+  body.appstore-live .mkappstore { display: flex; }
+  .mksep {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    color: var(--sep);
+    padding-bottom: var(--link-pad);
+  }
+
+  /* ── Mobile anchor layout ──────────────────────────────────────── */
+  @media (max-width: 640px) {
+    :root {
+      --sheet-w: 314px;
+      --sheet-h: 670px;
+      --wordmark: 38px;
+      --haiku: 20px;
+      --haiku-lh: 1.1;
+      --haiku-gap: 12px;
+      --gap-wordmark-haiku: 38px;
+      --footer-pad: 44px;
+      --footer-gap: 12px;
+      --link-size: 9.5px;
+      --link-track: 0.24em;
+      --link-pad: 6px;
+    }
+    .mkpaper {
+      width: min(var(--sheet-w), calc(100vw - 52px));
+      height: min(var(--sheet-h), calc(100vh - 64px));
+    }
+  }
+
+  /* honour reduced-motion — content rests fully visible regardless */
+  @media (prefers-reduced-motion: reduce) {
+    .mkcontent, .mkfooter { animation: none; }
+    .mkpaper { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <main class="mkpaper" aria-label="myku">
+    <div class="mkgrain"></div>
+
+    <div class="mkblot" aria-hidden="true">
+      <div class="mkblot-main"></div>
+      <div class="mkblot-splat"></div>
+    </div>
+
+    <div class="mkcontent">
+      <div class="mkwordmark"><span class="dot">·</span><span>myku</span><span class="dot">·</span></div>
+      <div class="mkhaiku">
+        <div>Workshop in waiting,</div>
+        <div>empty space full of meaning.</div>
+        <div>Myku painted sign.</div>
+      </div>
+    </div>
+
+    <div class="mkfooter">
+      <div class="mkfooter-row">
+        <a href="https://myku.space" class="mklink">myku<span class="dot">·</span>space</a>
+        <span class="mkappstore">
+          <span class="mksep" aria-hidden="true">|</span>
+          <a href="#" class="mklink">App&nbsp;Store</a>
+        </span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

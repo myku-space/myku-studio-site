@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "myku-studio",
+  "compatibility_date": "2026-06-21",
+  // Static-assets-only Worker: no `main` script — Cloudflare serves the files
+  // in ./public directly from its edge. https://developers.cloudflare.com/workers/static-assets/
+  "assets": {
+    "directory": "./public"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
